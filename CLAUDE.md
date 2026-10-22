@@ -32,15 +32,20 @@ pushing.
 
 ```
 index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
+src/app.js                        registers every SDK handler on the hub (index.js and the tests)
+src/hub.js                        reads Kavita on its own timer, states, scene events and cursors, actions
+src/devices.js                    the "Kavita" device: features, names in four languages, values
+src/kavita/client.js              REST client: API key -> JWT (plugin route), renewal, error kinds
+src/kavita/http.js                the one network function (node:http/https), the test seam
+src/kavita/model.js               parsers of the Kavita answers (series, libraries, stats, dates)
 src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/widgets.js                    dashboard widget handlers and covers (manifest `widgets`)
+src/texts.js                      status, errors, reports and sentences, four languages
+src/store.js                      cursors of the scene events under /data
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (en and fr mandatory)
+test/                             node --test, against the SDK's fake Gladys and test/helpers/fakeKavita.js
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +75,9 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in four languages (English, French, German,
+  Spanish): action messages, widget texts, feature names, manifest texts, and
+  `docs/{en,fr,de,es}.md`, kept in sync (`test/i18n.test.js`).
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +239,30 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## Kavita (propre à cette intégration)
+
+- **Version testée** : Kavita **0.9.1.4** (`jvmilazz0/kavita`, image du 02/09/2026), en Docker avec des EPUB/CBZ
+  générés. Routes lues dans `openapi.json` du tag `v0.9.1.4` (le dépôt a été réorganisé en `Kavita.Server/` sur
+  `develop` : lire le tag, pas la branche).
+- **Authentification** : `POST /api/Plugin/authenticate?apiKey=…&pluginName=Gladys` rend un `UserDto` dont seul le
+  `token` compte (en 0.9.1.4, `roles` y est vide et `id` vaut 0) : l'identifiant et l'admin se lisent dans les
+  claims du JWT (`nameid`, `role` = `["Admin","Login"]` ou `["Pleb","Login"]`). JWT de 3 jours, renouvelé sur 401.
+  `GET /api/Plugin/version?apiKey=` répond la version en `text/plain`. La clé ne passe que par ces deux routes.
+- **Admin seulement** : `GET /api/Stats/server/stats` et `POST /api/Library/scan` répondent 403 à un lecteur. Le
+  nombre de séries d'un lecteur vient de l'en-tête `Pagination` (`totalItems`) de `POST /api/Series/all-v2`.
+- **Statistiques utilisateur** : 0.9 `GET /api/Stats/user-read?userId=` (400 pour un autre utilisateur), 0.8
+  `GET /api/Stats/user/{id}/read`. Depuis la 0.9, `totalPagesRead` compte les sessions de lecture : une
+  progression posée d'un bond par l'API compte 1, pas le nombre de pages (la vraie liseuse avance page par page).
+- **Dates** : les champs `…Utc` sont en UTC **sans « Z »** ; `created`, `latestReadDate` sont à l'heure du serveur
+  Kavita ; « jamais » s'écrit `0001-01-01T00:00:00`.
+- **Événements** : nouvelle série = id au-dessus du plus grand vu (ids croissants) ; nouveau tome = `lastChapterAddedUtc`
+  plus récent que le curseur, série déjà connue ; un scan forcé (`scan-all?force=true`) ne change pas
+  `lastChapterAddedUtc` (vérifié). Série finie = `pagesRead >= pages` sur les 20 dernières lues (`SortField` 7).
+- **Tri des séries** (`SeriesSortField`) : 2 = date de création, 4 = dernier chapitre ajouté, 7 = progression de
+  lecture. `MangaFormat` : 0 images, 1 archive, 3 epub, 4 pdf.
+- **Couvertures** : `GET /api/Image/series-cover?seriesId=` accepte le Bearer ; vignettes PNG/WebP 320 × 455
+  (quelques Ko). Un EPUB sans image a `coverImage: ""` : pas de clé d'image. Une couverture AVIF (réglage de
+  Kavita) est refusée par `validateWidgetImage`.
+- Créer une bibliothèque de test par l'API (`POST /api/Library/create`) exige `metadataProvider` dans
+  {2, 3, 4} en 0.9.1.4 (0 est refusé).
