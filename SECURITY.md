@@ -30,6 +30,28 @@ Gladys before reporting a problem.
 
 In scope: the code of this repository and the Docker image it publishes.
 
+What the integration handles:
+
+- **Secrets**: the Kavita API key is a `secret` field of the Gladys
+  configuration. The integration reads it from Gladys at startup, keeps it in
+  memory, and sends it only to the configured server, in the query string of
+  the two plugin routes of Kavita (`/api/Plugin/authenticate`,
+  `/api/Plugin/version`) as Kavita requires; every other request carries the
+  short-lived JWT Kavita returns, in the `Authorization` header. Neither the
+  key nor the JWT is written to `/data` or to the logs, and error messages
+  never include a query string.
+- **Stored in `/data`**: `kavita-state.json`, the server address, the id of
+  the Kavita account, the highest series id and the newest chapter date seen,
+  the ids of the series already read to the end, and the page count at
+  midnight, so a restart announces nothing twice. Nothing else.
+- **Privacy**: the titles only appear in the logs at the debug level
+  (`LOG_LEVEL=debug`).
+- **Network**: requests go only to the Kavita address typed in the
+  configuration, in HTTP or HTTPS (certificates verified). The covers shown by
+  the widgets are read from this server, never from elsewhere. The integration
+  opens no port and calls no other service. It only reads, and asks Kavita to
+  scan its libraries: it never deletes nor changes anything.
+
 Out of scope: Gladys Assistant itself (see its
 [security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
-and the third-party services and devices the integration talks to.
+Kavita itself, and the other devices and services of your network.
