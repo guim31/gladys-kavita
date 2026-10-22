@@ -186,11 +186,12 @@ async function getContinueReading(hub, { language = 'en' }) {
       display: 'list',
       items: hub.onDeck.slice(0, MAX_ROWS).map((item) => ({
         title: fit(item.title, 60),
+        // The core cuts a subtitle at 60 characters: the pages first, the library after.
         subtitle: fit(
-          [item.library, `${item.pagesRead}/${item.pages} ${t(TEXT.pages, language)}`]
+          [`${item.pagesRead}/${item.pages} ${t(TEXT.pages, language)}`, item.library]
             .filter(Boolean)
             .join(' · '),
-          120,
+          60,
         ),
         ...withCover(item),
         badge: { text: `${item.progress} %`, color: WIDGET_COLORS.INFO },

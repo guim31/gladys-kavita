@@ -12,7 +12,7 @@
 // across restarts; the first reading of a server is the starting point):
 // - a new series: its id is above the highest id seen (Kavita ids only grow);
 // - a new chapter or volume of an existing series: its `lastChapterAddedUtc`
-//   is after the newest one seen;
+//   (a UTC time) is after the newest one seen;
 // - a series read to the end: pagesRead reaches pages, for a series not
 //   already known as finished.
 //
@@ -380,8 +380,8 @@ export class KavitaHub {
       this.versionAt = now;
     }
     if (this.saved.userId !== user.id) {
-      // Another account: its finished series and its pages start again.
-      Object.assign(this.saved, { userId: user.id, finished: null, day: null, pagesBase: null });
+      // Another account sees other libraries: every cursor starts again.
+      Object.assign(this.saved, { ...emptySaved(this.saved.url), userId: user.id });
       this.store.save(this.saved);
     }
 
@@ -392,7 +392,7 @@ export class KavitaHub {
     const recent = parseSeriesList(added.items);
     const updated = await client.recentlyUpdated(this.timings.updatedCount);
     if (user.admin) {
-      const stats = parseServerStats(await client.serverStats());
+      const stats = parseServerStats(await this.optional(client, 'serverStats'));
       this.snapshot.series = stats.series ?? updated.total;
       this.snapshot.volumes = stats.volumes;
     } else {
@@ -405,7 +405,9 @@ export class KavitaHub {
     this.snapshot.reading = deck.total ?? onDeck.length;
 
     const read = parseSeriesList((await client.recentlyRead(this.timings.readCount)).items);
-    const pages = parsePagesRead(user.id ? await client.userStats(user.id) : null);
+    const pages = parsePagesRead(
+      user.id ? await this.optional(client, 'userStats', user.id) : null,
+    );
 
     if (JSON.stringify(recent) !== JSON.stringify(this.recent)) {
       changed.add(WIDGET_KEYS.RECENTLY_ADDED);
@@ -421,6 +423,24 @@ export class KavitaHub {
     await this.announceSeries(recent);
     await this.announceChapters(parseSeriesList(updated.items), previousSeriesId);
     await this.announceFinished(read);
+  }
+
+  /**
+   * A statistic the device can do without: its failure (a route of another
+   * Kavita version, a 500) leaves the figure empty instead of the server offline.
+   */
+  async optional(client, method, ...args) {
+    try {
+      const answer = await client[method](...args);
+      this.resolved(`optional-${method}`);
+      return answer;
+    } catch (err) {
+      if (!err.kind || ![ERROR_KINDS.HTTP, ERROR_KINDS.FORBIDDEN].includes(err.kind)) {
+        throw err;
+      }
+      this.problem(`optional-${method}`, `Kavita: ${err.message}, figure left empty`);
+      return null;
+    }
   }
 
   /** Pages read today: the total of the user minus the total at midnight. */
@@ -469,19 +489,16 @@ export class KavitaHub {
 
   /** New chapters or volumes of series that existed at the previous reading. */
   async announceChapters(updated, previousSeriesId) {
-    const newest = updated.reduce(
-      (max, series) => (series.lastChapterAddedUtc > max ? series.lastChapterAddedUtc : max),
-      '',
-    );
+    const newest = updated.reduce((max, series) => Math.max(max, series.chapterAt ?? 0), 0);
     const cursor = this.saved.chapterAt;
-    if (typeof cursor !== 'string' || !Number.isFinite(previousSeriesId)) {
+    if (!Number.isFinite(cursor) || !Number.isFinite(previousSeriesId)) {
       this.saved.chapterAt = newest;
       this.store.save(this.saved);
       return;
     }
     const fresh = updated
-      .filter((series) => series.lastChapterAddedUtc > cursor)
-      .sort((a, b) => a.lastChapterAddedUtc.localeCompare(b.lastChapterAddedUtc));
+      .filter((series) => (series.chapterAt ?? 0) > cursor)
+      .sort((a, b) => a.chapterAt - b.chapterAt);
     if (fresh.length === 0) {
       return;
     }
@@ -491,7 +508,7 @@ export class KavitaHub {
     const announced = fresh
       // A new series is announced as such, not as a new chapter.
       .filter((series) => series.id <= previousSeriesId)
-      .filter((series) => Date.parse(`${series.lastChapterAddedUtc}Z`) >= minAt)
+      .filter((series) => series.chapterAt >= minAt)
       .slice(-this.timings.maxEventsPerRead);
     for (const series of announced) {
       logger.debug(`New chapter: "${series.title}" (${series.library})`);

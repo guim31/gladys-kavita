@@ -15,7 +15,7 @@ Docker image), not yet in a real Gladys installation: feedback welcome on the
 
 - Gladys Assistant 5.1.0 or later.
 - A **Kavita** server reachable from Gladys: on your network, or on the
-  Internet behind a reverse proxy. Kavita 0.8 and 0.9 are supported.
+  Internet behind a reverse proxy. Tested with Kavita 0.9; 0.8 should work.
 - The **API key** of your Kavita account: in Kavita, **Settings** → **3rd
   Party Clients** (**Auth Keys** since Kavita 0.9), copy the key. The
   integration sees what this account sees: its libraries, its reading
@@ -46,7 +46,7 @@ Docker image), not yet in a real Gladys installation: feedback welcome on the
 | **Series**             | series of the server (of your libraries with a reader key) |
 | **Volumes**            | volumes of the server (administrator key only)             |
 | **Series in progress** | series you started and did not finish ("On Deck")          |
-| **Pages read today**   | pages you read since midnight, as Kavita counts them       |
+| **Pages read today**   | pages you read today, as Kavita counts them                |
 | **Version**            | version of Kavita                                          |
 
 ## Dashboard
@@ -82,7 +82,7 @@ Docker image), not yet in a real Gladys installation: feedback welcome on the
 - **Read the latest Kavita additions**: a sentence for a notification or a
   speaker, for example _"2 new series on Kavita in the last 7 days: Quiet
   Morning and Test Comic."_ Results: the sentence, the number of new series,
-  the title of the latest one.
+  the title of the latest one (12 series at most).
 
 ### Scene ideas
 
@@ -123,7 +123,7 @@ Docker image), not yet in a real Gladys installation: feedback welcome on the
 - **Series read to the end** follows the 20 series read last, at the level of
   the series (a single volume read to the end is not an event).
 - **Pages read today** follows the reading statistics of Kavita (pages read in
-  its readers); the first day starts from the moment the integration is
-  installed.
+  its readers), counted from the first reading of the day: pages read after
+  midnight while Gladys or Kavita was stopped are left out.
 - One Kavita account and one server per installation of the integration.
 - Not affiliated with the Kavita project.

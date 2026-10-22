@@ -16,7 +16,7 @@ ou dans les [issues](https://github.com/guim31/gladys-kavita/issues).
 
 - Gladys Assistant 5.1.0 ou plus récent.
 - Un serveur **Kavita** joignable depuis Gladys : sur votre réseau, ou sur
-  Internet derrière un reverse proxy. Kavita 0.8 et 0.9 sont pris en charge.
+  Internet derrière un reverse proxy. Testé avec Kavita 0.9 ; la 0.8 devrait fonctionner.
 - La **clé d'API** de votre compte Kavita : dans Kavita, **Paramètres** →
   **3rd Party Clients** (**Auth Keys** depuis Kavita 0.9), copiez la clé.
   L'intégration voit ce que voit ce compte : ses bibliothèques, sa
@@ -47,7 +47,7 @@ ou dans les [issues](https://github.com/guim31/gladys-kavita/issues).
 | **Séries**                 | séries du serveur (de vos bibliothèques avec une clé de lecteur) |
 | **Tomes**                  | tomes du serveur (clé d'administrateur seulement)                |
 | **Séries en cours**        | séries commencées et pas terminées (« En cours » / « On Deck »)  |
-| **Pages lues aujourd'hui** | pages lues depuis minuit, comptées par Kavita                    |
+| **Pages lues aujourd'hui** | pages lues aujourd'hui, comptées par Kavita                      |
 | **Version**                | version de Kavita                                                |
 
 ## Tableau de bord
@@ -86,7 +86,7 @@ ou dans les [issues](https://github.com/guim31/gladys-kavita/issues).
 - **Lire les derniers ajouts de Kavita** : une phrase pour une notification ou
   une enceinte, par exemple _« 2 nouvelle(s) série(s) sur Kavita ces 7 derniers
   jours : Quiet Morning et Test Comic. »_ Résultats : la phrase, le nombre de
-  nouvelles séries, le titre de la dernière.
+  nouvelles séries, le titre de la dernière (12 séries au plus).
 
 ### Idées de scènes
 
@@ -129,7 +129,8 @@ ou dans les [issues](https://github.com/guim31/gladys-kavita/issues).
 - **Série lue jusqu'au bout** suit les 20 séries lues en dernier, au niveau de
   la série (un seul tome lu jusqu'au bout n'est pas un événement).
 - **Pages lues aujourd'hui** suit les statistiques de lecture de Kavita (pages
-  lues dans ses liseuses) ; le premier jour part du moment où l'intégration est
-  installée.
+  lues dans ses liseuses), comptées depuis la première lecture du jour : les
+  pages lues après minuit pendant un arrêt de Gladys ou de Kavita ne comptent
+  pas.
 - Un compte Kavita et un serveur par installation de l'intégration.
 - Sans lien avec le projet Kavita.

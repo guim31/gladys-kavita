@@ -16,7 +16,7 @@ willkommen.
 
 - Gladys Assistant 5.1.0 oder neuer.
 - Ein **Kavita**-Server, den Gladys erreicht: in deinem Netzwerk oder im
-  Internet hinter einem Reverse Proxy. Kavita 0.8 und 0.9 werden unterstützt.
+  Internet hinter einem Reverse Proxy. Getestet mit Kavita 0.9; 0.8 sollte funktionieren.
 - Der **API-Schlüssel** deines Kavita-Kontos: in Kavita unter
   **Einstellungen** → **3rd Party Clients** (**Auth Keys** seit Kavita 0.9)
   den Schlüssel kopieren. Die Integration sieht, was dieses Konto sieht: seine
@@ -48,7 +48,7 @@ willkommen.
 | **Serien**                | Serien des Servers (deiner Bibliotheken bei Leser-Schlüssel) |
 | **Bände**                 | Bände des Servers (nur mit Administrator-Schlüssel)          |
 | **Laufende Serien**       | begonnene, nicht beendete Serien („On Deck“)                 |
-| **Heute gelesene Seiten** | seit Mitternacht gelesene Seiten, wie Kavita sie zählt       |
+| **Heute gelesene Seiten** | heute gelesene Seiten, wie Kavita sie zählt                  |
 | **Version**               | Version von Kavita                                           |
 
 ## Dashboard
@@ -87,7 +87,7 @@ willkommen.
 - **Neueste Kavita-Zugänge vorlesen**: ein Satz für eine Benachrichtigung oder
   einen Lautsprecher, zum Beispiel _„2 neue Serie(n) auf Kavita in den letzten
   7 Tagen: Quiet Morning und Test Comic.“_ Ergebnisse: der Satz, die Zahl der
-  neuen Serien, der Titel der neuesten.
+  neuen Serien, der Titel der neuesten (höchstens 12 Serien).
 
 ### Szenen-Ideen
 
@@ -131,7 +131,8 @@ willkommen.
 - **Serie zu Ende gelesen** verfolgt die 20 zuletzt gelesenen Serien, auf
   Ebene der Serie (ein einzelner zu Ende gelesener Band ist kein Ereignis).
 - **Heute gelesene Seiten** folgt der Lesestatistik von Kavita (in seinen
-  Readern gelesene Seiten); der erste Tag beginnt mit der Installation der
-  Integration.
+  Readern gelesene Seiten), gezählt ab dem ersten Lesen des Tages: Seiten, die
+  nach Mitternacht gelesen wurden, während Gladys oder Kavita gestoppt war,
+  fehlen.
 - Ein Kavita-Konto und ein Server pro Installation der Integration.
 - Nicht mit dem Kavita-Projekt verbunden.

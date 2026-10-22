@@ -15,7 +15,7 @@ o en las [issues](https://github.com/guim31/gladys-kavita/issues).
 
 - Gladys Assistant 5.1.0 o posterior.
 - Un servidor **Kavita** accesible desde Gladys: en su red, o en Internet
-  detrás de un proxy inverso. Se admiten Kavita 0.8 y 0.9.
+  detrás de un proxy inverso. Probado con Kavita 0.9; la 0.8 debería funcionar.
 - La **clave de API** de su cuenta Kavita: en Kavita, **Ajustes** → **3rd
   Party Clients** (**Auth Keys** desde Kavita 0.9), copie la clave. La
   integración ve lo que ve esa cuenta: sus bibliotecas, su progreso de
@@ -46,7 +46,7 @@ o en las [issues](https://github.com/guim31/gladys-kavita/issues).
 | **Series**             | series del servidor (de sus bibliotecas con una clave de lector) |
 | **Tomos**              | tomos del servidor (solo con clave de administrador)             |
 | **Series en curso**    | series empezadas y no terminadas («On Deck»)                     |
-| **Páginas leídas hoy** | páginas leídas desde medianoche, según las cuenta Kavita         |
+| **Páginas leídas hoy** | páginas leídas hoy, según las cuenta Kavita                      |
 | **Versión**            | versión de Kavita                                                |
 
 ## Panel
@@ -84,7 +84,7 @@ o en las [issues](https://github.com/guim31/gladys-kavita/issues).
 - **Leer las últimas novedades de Kavita**: una frase para una notificación o
   un altavoz, por ejemplo _«2 serie(s) nueva(s) en Kavita en los últimos 7
   días: Quiet Morning y Test Comic.»_ Resultados: la frase, el número de
-  series nuevas, el título de la última.
+  series nuevas, el título de la última (12 series como máximo).
 
 ### Ideas de escenas
 
@@ -128,7 +128,8 @@ o en las [issues](https://github.com/guim31/gladys-kavita/issues).
 - **Serie leída hasta el final** sigue las 20 series leídas por última vez, a
   nivel de serie (un solo tomo leído hasta el final no es un evento).
 - **Páginas leídas hoy** sigue las estadísticas de lectura de Kavita (páginas
-  leídas en sus lectores); el primer día empieza en el momento en que se
-  instala la integración.
+  leídas en sus lectores), contadas desde la primera lectura del día: las
+  páginas leídas tras la medianoche mientras Gladys o Kavita estaban detenidos
+  no cuentan.
 - Una cuenta de Kavita y un servidor por instalación de la integración.
 - Sin relación con el proyecto Kavita.

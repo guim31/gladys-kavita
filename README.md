@@ -20,7 +20,7 @@ Texts and documentation in English, French, German and Spanish.
 ## Requirements
 
 - Gladys Assistant 5.1.0 or later.
-- A Kavita server (0.8 or 0.9) reachable from Gladys, on the local network or
+- A Kavita server (tested with 0.9; 0.8 should work) reachable from Gladys, on the local network or
   behind a reverse proxy, and the **API key** of a Kavita account (Settings →
   3rd Party Clients, Auth Keys since 0.9). An administrator's key adds the
   volume count and the library scans.
@@ -52,8 +52,8 @@ links it from the Configuration screen.
 - Scene events come from cursors kept in `/data` (highest series id, newest
   `lastChapterAddedUtc`, finished series ids): announced once, also across
   restarts; the first reading of a server is the starting point.
-- "Pages read today" is the user's `totalPagesRead` minus its value at local
-  midnight (`TZ` of Gladys).
+- "Pages read today" is the user's `totalPagesRead` minus its value at the first
+  reading of the local day (`TZ` of Gladys).
 - The covers of the widgets are the thumbnails of Kavita, served through the
   widget image proxy of Gladys: the browser never sees the server nor the key.
 - Transport badge: `local` for a private address, `cloud` for a server reached
@@ -69,7 +69,7 @@ files: the answers in `test/fixtures/kavita/` are real, and the integration ran
 in its locked-down container (read-only, no capabilities, 256 MB) against that
 server: new series and new volume after a scan, a series marked as read, a
 reader key, a refused key. It has not yet run in a real Gladys installation:
-feedback welcome. Kavita 0.8 is supported from its API (same routes, older
+feedback welcome. Kavita 0.8 should work from its API (same routes, older
 route for the user statistics) but was not run.
 
 ## Limitations

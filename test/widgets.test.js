@@ -82,7 +82,7 @@ test('continue reading: the series in progress with their progress', async (t) =
   const [row] = components.find((c) => c.type === 'card-list').items;
   assert.deepEqual(row, {
     title: 'Test Comic',
-    subtitle: 'Comics · 3/9 pages',
+    subtitle: '3/9 pages · Comics',
     image: 'series-2',
     badge: { text: '33 %', color: row.badge.color },
   });

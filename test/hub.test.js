@@ -139,6 +139,35 @@ test('another server starts its cursors again', async (t) => {
   assert.equal(w.fake.sceneEvents.length, 0);
 });
 
+test('another account on the same server starts every cursor again', async (t) => {
+  const clock = createClock();
+  const server = new FakeKavita();
+  const w = await world(t, { clock, server });
+  // The reader sees series the administrator's cursors never met.
+  server.admin = false;
+  w.hub.saved.seriesId = 1;
+  clock.advance(60_000);
+  // The key now belongs to another account: the next reading logs in again.
+  w.hub.client.user = null;
+  w.hub.client.token = null;
+  await w.hub.refresh();
+  assert.equal(w.hub.saved.userId, 2);
+  assert.equal(w.fake.sceneEvents.length, 0);
+});
+
+test('a failing statistic leaves its figure empty, the server online', async (t) => {
+  const w = await world(t);
+  const route = w.server.route.bind(w.server);
+  w.server.route = (path, ...rest) =>
+    path.startsWith('/api/Stats/') ? { status: 500, headers: {}, body: '' } : route(path, ...rest);
+  w.hub.published.clear();
+  await w.hub.refresh();
+  assert.equal(state(w, KEYS.ONLINE), 1);
+  assert.equal(w.hub.snapshot.pagesToday, null);
+  assert.equal(w.hub.snapshot.series, 3); // from the series list
+  assert.equal(w.fake.connectionStatus.connected, true);
+});
+
 test('pages read today: the total of the user minus the total at midnight', async (t) => {
   const w = await world(t);
   w.clock.advance(60_000);

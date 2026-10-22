@@ -12,7 +12,7 @@ test('the series of a real answer', () => {
   assert.equal(comic.format, 'archive');
   assert.equal(comic.progress, 33);
   assert.equal(comic.finished, false);
-  assert.equal(comic.lastChapterAddedUtc, '2026-10-22T00:41:26.4975819');
+  assert.equal(comic.chapterAt, Date.parse('2026-10-22T00:41:26.497Z'));
   assert.deepEqual(parseSeriesList(null), []);
   assert.deepEqual(parseSeriesList([{ name: 'no id' }]), []);
 });

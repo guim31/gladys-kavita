@@ -55,9 +55,7 @@ export function parseSeries(entry) {
     progress: pages > 0 ? Math.min(100, Math.round((pagesRead / pages) * 100)) : 0,
     finished: pages > 0 && pagesRead >= pages,
     createdAt: parseDate(entry.created),
-    lastChapterAddedUtc: NEVER.test(text(entry.lastChapterAddedUtc))
-      ? ''
-      : text(entry.lastChapterAddedUtc),
+    chapterAt: parseDate(entry.lastChapterAddedUtc, true),
     lastReadAt: parseDate(entry.latestReadDate),
   };
 }
