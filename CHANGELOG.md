@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-22
+
 ### Added
 
 - A **Kavita** device: online, libraries, series, volumes (administrator key),
@@ -25,4 +27,5 @@ the notes of the version's GitHub Release.
   progress with their covers and progress, pages read today).
 - Texts and documentation in English, French, German and Spanish.
 
-[Unreleased]: https://github.com/guim31/gladys-kavita/commits/main
+[Unreleased]: https://github.com/guim31/gladys-kavita/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/guim31/gladys-kavita/releases/tag/v1.0.0
