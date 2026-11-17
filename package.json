@@ -1,6 +1,6 @@
 {
   "name": "gladys-kavita",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Kavita integration for Gladys Assistant: new series and volumes, reading in progress, finished series, library scans.",
   "type": "module",
